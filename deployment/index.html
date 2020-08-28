@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Deployment - Rare Disease Project Documentation</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Deployment";
+    var mkdocs_page_input_path = "deployment.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Rare Disease Project Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Rare Disease Project</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../customization/">Customize your instance</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Deployment</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#administrative-user">Administrative user</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#web-server">Web server</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#application">Application</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#integration-with-systemd">Integration with systemd</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#apache">Apache</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../migration/">Migrate from previous releases</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Rare Disease Project Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Deployment</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="deployment">Deployment</h1>
+<p>This section expands the process of deploying in a production environment. Make
+sure you are familiarized with the <a href="/installation">installation</a> procedure
+first before attempting the described steps.</p>
+<h2 id="administrative-user">Administrative user</h2>
+<p>Your rgr instance is initialized with an administrator user. Make sure you
+change its default password before exposing your application to the Internet.</p>
+<h2 id="web-server">Web server</h2>
+<p>There a few options you will likely want to specify when deploying your rgr
+instance.</p>
+<ul>
+<li><code>-Dserver.port=&lt;port&gt;</code>: Port for the webserver to listen on.</li>
+<li><code>-Dspring.config.location=file:&lt;faq location&gt;</code>: Location to find the FAQ question &amp; answers</li>
+<li><code>-Djava.security.egd=file:/dev/./urandom</code>:  Specify this if you receive logs such as:
+  <em>"Creation of SecureRandom instance for session ID generation using
+  [SHA1PRNG] took [235,853] milliseconds."</em> The secure random calls may be
+  blocking as there is not enough entropy to feed them in <code>/dev/random</code>.</li>
+</ul>
+<h2 id="application">Application</h2>
+<ul>
+<li><code>cd /project/directory</code></li>
+<li><code>wget https://github.com/PavlidisLab/modinvreg/releases/download/vx.x/rdp-x.x.x.jar</code></li>
+<li>create application-prod.properties, faq.properties and optionally login.properties</li>
+<li>test run the jar: java -Dserver.port=8080 -Dspring.config.location=file:faq.properties -Djava.security.egd=file:/dev/./urandom -jar rdp-x.x.x.jar</li>
+<li>(Optional) Log into the database and activate other organisms.</li>
+<li>Set up jar as systemd service:</li>
+<li>create file /etc/systemd/system/rdp.service containing similar to the following:</li>
+</ul>
+<h2 id="integration-with-systemd">Integration with systemd</h2>
+<p>If you are not using a container technology such as Docker, we recommend that
+you use a systemd service unit to deploy your rgr instance.</p>
+<pre><code class="Ini">[Unit]
+Description=rdp
+After=syslog.target
+
+[Service]
+User=tomcat
+Group=tomcat
+WorkingDirectory=/project/directory
+ExecStart=/bin/java -Xms256m -Xmx3g -Dserver.port=8083 -Dspring.config.location=file:faq.properties -Djava.security.egd=file:/dev/./urandom -jar rdp-x.x.x.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+<ul>
+<li>Start service: <code>systemctl start rdp.service</code></li>
+<li>View logs: <code>journalctl -f -u rdp.service</code></li>
+</ul>
+<h3 id="apache">Apache</h3>
+<ul>
+<li>Create a standard virtualhost with the following proxies:</li>
+<li><code>ProxyPass / http://localhost:&lt;port&gt;/</code></li>
+<li><code>ProxyPassReverse / http://localhost:&lt;port&gt;/</code></li>
+</ul>
+<p>For custom deployments see: https://docs.spring.io/spring-boot/docs/current/reference/html/cloud-deployment.html
+To install as a system service see: https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../migration/" class="btn btn-neutral float-right" title="Migrate from previous releases">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../customization/" class="btn btn-neutral" title="Customize your instance"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../customization/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../migration/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

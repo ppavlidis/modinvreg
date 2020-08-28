@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Customize your instance - Rare Disease Project Documentation</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Customize your instance";
+    var mkdocs_page_input_path = "customization.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Rare Disease Project Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Rare Disease Project</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Customize your instance</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#additional-database-configurations">Additional database configurations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gene-information-and-go-terms-ontology">Gene information and GO terms ontology</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#internationalization-and-custom-messages">Internationalization and custom messages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ortholog-mapping">Ortholog mapping</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#building-from-source">Building from source</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../deployment/">Deployment</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../migration/">Migrate from previous releases</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Rare Disease Project Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Customize your instance</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="customize-your-instance">Customize your instance</h1>
+<h2 id="additional-database-configurations">Additional database configurations</h2>
+<p>The Web application will auto-magically initialize the database and fill the
+tables with gene orthologs data. Since this can be pretty expensive to run each
+time the server is restarted, you should set the following to skip
+initialization:</p>
+<pre><code class="ini">spring.datasource.initialize=false
+</code></pre>
+
+<h2 id="gene-information-and-go-terms-ontology">Gene information and GO terms ontology</h2>
+<p>Gene information and GO terms ontology are downloaded from NCBI and scheduled
+for update on a monthly basis.</p>
+<p>There are a couple of ways this process can be configured to prevent periodic
+update or to use data from the local filesystem.</p>
+<pre><code class="ini">rdp.settings.cache.enabled=true
+rdp.settings.cache.load-from-disk=false
+</code></pre>
+
+<p>By default, rgr will retrieve the latest genes and gene-term associations from
+NCBI, and GO terms from <a href="http://www.ontobee.org/ontology/OBI">Ontobee</a>. Users
+genes and terms will be updated in the aftermath of a successful update.</p>
+<p>However, if you choose to load data from the disk, you must provide a location
+where gene and GO terms can be downloaded relative to the working directory of
+the Web application.</p>
+<pre><code class="ini">rdp.settings.cache.gene-files-location=genes
+rdp.settings.cache.term-file=go.obo
+rdp.settings.cache.annotation-file=gene2go.gz
+</code></pre>
+
+<p>With the above settings and given that <em>Homo sapiens</em> taxon is enabled, rgr
+will retrieve gene information from <code>genes/Homo_sapiens.gene_info.gz</code>.</p>
+<h2 id="internationalization-and-custom-messages">Internationalization and custom messages</h2>
+<p>Some text displayed in rgr can be customized and internationalized.</p>
+<p>To do so, create a <code>messages.properties</code> file in the working directory of the Web application
+add the entries you want to change. Default values are found in
+<a href="https://github.com/PavlidisLab/rgr/blob/development/src/main/resources/messages.properties">messages.properties</a></p>
+<p>You can use suffixed like <code>messages_en_CA.properties</code> for region-specific
+localization.</p>
+<p>Note that <code>application-prod.properties</code> is also used for messages for backward
+compatibility. New and existing messages should be moved to <code>messages.properties</code>.</p>
+<h2 id="faq">FAQ</h2>
+<p>The FAQ can be customized in <code>faq.properties</code>.</p>
+<ul>
+<li>Location: Specified using <code>-Dspring.config.location=file:&lt;location&gt;</code></li>
+<li>Defaults: Empty</li>
+<li>Contents: All of the question and answer style items that will display in the frequently asked questions page. Each entry requires two parts: <code>rdp.faq.questions.&lt;q_key&gt;</code> and <code>rdp.faq.answers.&lt;q_key&gt;</code> which hold the question and the corresponding answer, respectively.</li>
+<li>Example: https://github.com/PavlidisLab/modinvreg/blob/master/faq.properties</li>
+<li>login.properties</li>
+<li>Location: Working directory of running jar</li>
+<li>Defaults: https://github.com/PavlidisLab/modinvreg/blob/master/src/main/resources/application.properties</li>
+<li>Contents: Create this file if you would like to customise spring specific messages such as incorrect username/password.</li>
+</ul>
+<h4 id="notes">Notes</h4>
+<ul>
+<li>The organisms table is prepopulated on creation however all but human are turned off. Set the active column to 1 in the database to turn on an organism (Example (this will activate mouse): <code>update taxon set active=1 where taxon_id=10090</code>)</li>
+<li>If a required table is not found in the database upon application startup it will create it, it will NOT delete existing data.</li>
+<li>In order to access the RDMMN shared data system (international search), your application must use HTTPs. If you do not have HTTPs setup for you domain, you can consult the following guides on how to set it up:<ul>
+<li><a href="https://medium.com/@raupach/how-to-install-lets-encrypt-with-tomcat-3db8a469e3d2">medium.com/@raupach/how-to-install-lets-encrypt-with-tomcat-3db8a469e3d2</a></li>
+<li><a href="https://community.letsencrypt.org/t/configuring-lets-encrypt-with-tomcat-6-x-and-7-x/32416">community.letsencrypt.org/t/configuring-lets-encrypt-with-tomcat-6-x-and-7-x/32416</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="ortholog-mapping">Ortholog mapping</h2>
+<p>There is a static ortholog mapping included with the application, that will automatically populate the database on startup.</p>
+<p>For future updates of the ortholog mapping, you can watch the
+<a href="https://github.com/PavlidisLab/modinvreg/blob/development/src/main/resources/data.sql">data.sql</a>
+file for changes, and run the ortholog part on your database when that happens.</p>
+<h2 id="building-from-source">Building from source</h2>
+<p>You can customize rgr by editing the publicly available source code and
+packaging the JAR archive yourself.</p>
+<pre><code class="bash">git clone https://github.com/PavlidisLab/rgr.git
+cd rgr/
+# edit what you want...
+./mvnw package
+</code></pre>
+
+<p>The new build will be available in the <code>target</code> directory.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../deployment/" class="btn btn-neutral float-right" title="Deployment">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../installation/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../installation/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../deployment/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
