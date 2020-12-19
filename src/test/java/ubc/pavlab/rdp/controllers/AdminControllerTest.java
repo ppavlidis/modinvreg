@@ -32,6 +32,7 @@ import ubc.pavlab.rdp.util.TestUtils;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.when;
@@ -100,7 +101,7 @@ public class AdminControllerTest {
 
         @Override
         public AccessToken convert( String s ) {
-            return accessTokenRepository.findOne( Integer.parseInt( s ) );
+            return accessTokenRepository.findById( Integer.parseInt( s ) ).orElse( null );
         }
     }
 
@@ -108,7 +109,7 @@ public class AdminControllerTest {
 
         @Override
         public Role convert( String s ) {
-            return roleRepository.findOne( Integer.parseInt( s ) );
+            return roleRepository.findById( Integer.parseInt( s ) ).orElse( null );
         }
     }
 
@@ -124,10 +125,10 @@ public class AdminControllerTest {
     @WithMockUser(roles = { "ADMIN" })
     public void givenLoggedIn_whenCreateServiceAccount_thenRedirect3xx() throws Exception {
         when( siteSettings.getHostUri() ).thenReturn( URI.create( "http://localhost/" ) );
-        when( roleRepository.findOne( 1 ) ).thenReturn( createRole( 1, "ROLE_USER" ) );
-        when( roleRepository.findOne( 2 ) ).thenReturn( createRole( 2, "ROLE_ADMIN" ) );
+        when( roleRepository.findById( 1 ) ).thenReturn( Optional.of( createRole( 1, "ROLE_USER" ) ) );
+        when( roleRepository.findById( 2 ) ).thenReturn( Optional.of( createRole( 2, "ROLE_ADMIN" ) ) );
         when( userService.createServiceAccount( any() ) ).thenAnswer( answer -> {
-            User createdUser = answer.getArgumentAt( 0, User.class );
+            User createdUser = answer.getArgument( 0, User.class );
             createdUser.setId( 1 );
             return createdUser;
         } );
@@ -163,7 +164,7 @@ public class AdminControllerTest {
         User user = createUser( 1 );
         AccessToken accessToken = TestUtils.createAccessToken( 1, user, "1234" );
         when( userService.findUserById( 1 ) ).thenReturn( user );
-        when( accessTokenRepository.findOne( 1 ) ).thenReturn( accessToken );
+        when( accessTokenRepository.findById( 1 ) ).thenReturn( Optional.of( accessToken ) );
         mvc.perform( post( "/admin/users/{user}/revoke-access-token/{accessToken}", user.getId(), accessToken.getId() ) )
                 .andExpect( status().is3xxRedirection() )
                 .andExpect( redirectedUrl( "/admin/users/1" ) );

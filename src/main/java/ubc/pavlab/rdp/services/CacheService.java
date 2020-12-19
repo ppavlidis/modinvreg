@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import ubc.pavlab.rdp.settings.ApplicationSettings;
@@ -62,9 +63,9 @@ public class CacheService {
             userService.updateUserTerms();
             organInfoService.updateOrganInfos();
             userOrganService.updateUserOrgans();
-            CronSequenceGenerator sequenceGenerator = new CronSequenceGenerator( UPDATE_CACHE_CRON );
+            CronExpression cronExpression = CronExpression.parse( UPDATE_CACHE_CRON );
             log.info( MessageFormat.format( "Done updating cached data. Next update is scheduled on {0}.",
-                    sequenceGenerator.next( Date.from( Instant.now() ) ) ) );
+                    cronExpression.next( Instant.now() ) ) );
         }
     }
 }

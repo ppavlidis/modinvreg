@@ -18,11 +18,11 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
 
     @Override
     public <S extends GeneOntologyTermInfo> S save( S term ) {
-        return saveAlias( term.getGoId(), term );
+        return saveByAlias( term.getGoId(), term );
     }
 
     @Override
-    public <S extends GeneOntologyTermInfo> Iterable<S> save( Iterable<S> iterable ) {
+    public <S extends GeneOntologyTermInfo> Iterable<S> saveAll( Iterable<S> iterable ) {
         List<GeneOntologyTermInfo> savedTerms = new ArrayList<>();
         for ( GeneOntologyTermInfo term : iterable ) {
             savedTerms.add( save( term ) );
@@ -30,7 +30,17 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
         return (Iterable<S>) savedTerms;
     }
 
-    public <S extends GeneOntologyTermInfo> S saveAlias( String alias, S term ) {
+    @Override
+    public Optional<GeneOntologyTermInfo> findById( String s ) {
+        return Optional.ofNullable( terms.get( s ) );
+    }
+
+    @Override
+    public boolean existsById( String s ) {
+        return terms.containsKey( s );
+    }
+
+    public <S extends GeneOntologyTermInfo> S saveByAlias( String alias, S term ) {
         terms.put( alias, term );
         for ( Integer geneId : term.getDirectGeneIds() ) {
             geneIdsToTerms.add( geneId, term );
@@ -38,22 +48,12 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
         return term;
     }
 
-    public <S extends GeneOntologyTermInfo> Iterable<S> saveAlias( Map<String, GeneOntologyTermInfo> terms ) {
+    public <S extends GeneOntologyTermInfo> Iterable<S> saveAllByAlias( Map<String, GeneOntologyTermInfo> terms ) {
         List<GeneOntologyTermInfo> savedTerms = new ArrayList<>( terms.size() );
         for ( Map.Entry<String, GeneOntologyTermInfo> entry : terms.entrySet() ) {
-            savedTerms.add( saveAlias( entry.getKey(), entry.getValue() ) );
+            savedTerms.add( saveByAlias( entry.getKey(), entry.getValue() ) );
         }
         return (Iterable<S>) savedTerms;
-    }
-
-    @Override
-    public GeneOntologyTermInfo findOne( String s ) {
-        return terms.get( s );
-    }
-
-    @Override
-    public boolean exists( String s ) {
-        return terms.containsKey( s );
     }
 
     @Override
@@ -62,10 +62,12 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
     }
 
     @Override
-    public Collection<GeneOntologyTermInfo> findAll( Iterable<String> iterable ) {
+    public Collection<GeneOntologyTermInfo> findAllById( Iterable<String> iterable ) {
         Collection<GeneOntologyTermInfo> results = new HashSet<>();
         for ( String goTerm : iterable ) {
-            results.add( findOne( goTerm ) );
+            if ( terms.containsKey( goTerm ) ) {
+                results.add( terms.get( goTerm ) );
+            }
         }
         return results;
     }
@@ -80,7 +82,7 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
     }
 
     @Override
-    public void delete( String s ) {
+    public void deleteById( String s ) {
         terms.remove( s );
     }
 
@@ -90,10 +92,18 @@ public class GeneOntologyTermInfoRepository implements CrudRepository<GeneOntolo
     }
 
     @Override
-    public void delete( Iterable<? extends GeneOntologyTermInfo> iterable ) {
+    public void deleteAllById( Iterable<? extends String> iterable ) {
+        for ( String s : iterable ) {
+            deleteById( s );
+        }
+    }
+
+    @Override
+    public void deleteAll( Iterable<? extends GeneOntologyTermInfo> iterable ) {
         for ( GeneOntologyTermInfo term : iterable ) {
             delete( term );
         }
+
     }
 
     @Override

@@ -18,7 +18,7 @@ public class TaxonServiceImpl implements TaxonService {
 
     @Override
     public Taxon findById( Integer id ) {
-        return taxonRepository.findOne( id );
+        return taxonRepository.findById( id ).orElse( null );
     }
 
     @Override

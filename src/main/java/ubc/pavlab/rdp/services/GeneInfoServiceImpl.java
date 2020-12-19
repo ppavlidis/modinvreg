@@ -131,7 +131,7 @@ public class GeneInfoServiceImpl implements GeneInfoService {
                             gene.setModificationDate( record.getModificationDate() );
                             return gene;
                         } ).collect( Collectors.toSet() );
-                geneInfoRepository.save( geneData );
+                geneInfoRepository.saveAll( geneData );
                 log.info( MessageFormat.format( "Done updating genes for {0}.", taxon ) );
             } catch ( ParseException | IOException e ) {
                 log.error( MessageFormat.format( "Issue loading genes for {0}.", taxon ), e );

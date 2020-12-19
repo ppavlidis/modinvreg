@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @PostAuthorize("hasPermission(returnObject, 'read')")
     public User findUserById( int id ) {
-        return userRepository.findOne( id );
+        return userRepository.findById( id ).orElse( null );
     }
 
 

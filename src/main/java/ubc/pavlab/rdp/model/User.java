@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.*;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.StringUtils;
 import ubc.pavlab.rdp.model.enums.PrivacyLevelType;
 import ubc.pavlab.rdp.model.enums.TierType;
@@ -15,6 +12,9 @@ import ubc.pavlab.rdp.model.enums.TierType;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -61,7 +61,7 @@ public class User implements UserContent {
     private String email;
 
     @Column(name = "password")
-    @Length(min = 6, message = "Your password must have at least 6 characters.", groups = { ValidationUserAccount.class })
+    @Size(min = 6, message = "Your password must have at least 6 characters.", groups = { ValidationUserAccount.class })
     @NotEmpty(message = "Please provide your password.", groups = { ValidationUserAccount.class })
     @JsonIgnore
     @org.springframework.data.annotation.Transient

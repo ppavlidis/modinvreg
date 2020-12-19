@@ -19,7 +19,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import ubc.pavlab.rdp.WebMvcConfig;
+import ubc.pavlab.rdp.controllers.UserController;
 import ubc.pavlab.rdp.events.OnContactEmailUpdateEvent;
 import ubc.pavlab.rdp.exception.TokenException;
 import ubc.pavlab.rdp.listeners.UserListener;
@@ -46,7 +48,6 @@ import java.util.stream.LongStream;
 
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static ubc.pavlab.rdp.util.TestUtils.*;
 
@@ -135,11 +136,11 @@ public class UserServiceImplTest {
     public void setUp() {
         User user = createUser( 1 );
 
-        when( userRepository.findOne( user.getId() ) ).thenReturn( user );
+        when( userRepository.findById( user.getId() ) ).thenReturn( Optional.of( user ) );
         when( userRepository.findOneWithRoles( user.getId() ) ).thenReturn( user );
-        when( userRepository.save( any( User.class ) ) ).then( i -> i.getArgumentAt( 0, User.class ) );
-        when( passwordResetTokenRepository.save( any( PasswordResetToken.class ) ) ).then( i -> i.getArgumentAt( 0, PasswordResetToken.class ) );
-        when( tokenRepository.save( any( VerificationToken.class ) ) ).then( i -> i.getArgumentAt( 0, VerificationToken.class ) );
+        when( userRepository.save( any( User.class ) ) ).then( i -> i.getArgument( 0, User.class ) );
+        when( passwordResetTokenRepository.save( any( PasswordResetToken.class ) ) ).then( i -> i.getArgument( 0, PasswordResetToken.class ) );
+        when( tokenRepository.save( any( VerificationToken.class ) ) ).then( i -> i.getArgument( 0, VerificationToken.class ) );
 
         when( applicationSettings.getGoTermSizeLimit() ).thenReturn( 100L );
         when( applicationSettings.getOrgans() ).thenReturn( organSettings );
@@ -152,7 +153,7 @@ public class UserServiceImplTest {
         when( applicationSettings.getProfile() ).thenReturn( profileSettings );
 
         when( geneInfoService.load( anyCollection() ) ).thenAnswer(
-                a -> a.getArgumentAt( 0, Collection.class ).stream()
+                a -> a.getArgument( 0, Collection.class ).stream()
                         .map( o -> geneInfoService.load( (Integer) o ) )
                         .filter( Objects::nonNull )
                         .collect( Collectors.toSet() ) );
@@ -232,7 +233,7 @@ public class UserServiceImplTest {
                 .collect( Collectors.toMap( GeneOntologyTerm::getGoId, Function.identity() ) );
 
         when( goService.count() ).thenReturn( (long) termMap.size() );
-        when( goService.getTerm( any() ) ).thenAnswer( a -> termMap.get( a.getArgumentAt( 0, String.class ) ) );
+        when( goService.getTerm( any() ) ).thenAnswer( a -> termMap.get( a.getArgument( 0, String.class ) ) );
         when( goService.termFrequencyMap( Mockito.anyCollectionOf( GeneInfo.class ) ) ).thenReturn( termFrequencies );
     }
 
@@ -779,7 +780,7 @@ public class UserServiceImplTest {
         Collection<GeneOntologyTermInfo> terms = IntStream.range( 1, 10 ).boxed().map(
                 nbr -> createTermWithGenes( toGOId( nbr ), createGene( 100 + nbr, taxon ) )
         ).collect( Collectors.toSet() );
-        when( geneInfoService.load( any( Integer.class ) ) ).thenAnswer( a -> createGene( a.getArgumentAt( 0, Integer.class ), taxon ) );
+        when( geneInfoService.load( any( Integer.class ) ) ).thenAnswer( a -> createGene( a.getArgument( 0, Integer.class ), taxon ) );
 
         for ( GeneOntologyTermInfo term : terms ) {
             when( goService.getTerm( term.getGoId() ) ).thenReturn( term );
@@ -905,7 +906,7 @@ public class UserServiceImplTest {
 
         when( goService.getGenesInTaxon( Mockito.anyCollectionOf( GeneOntologyTermInfo.class ), any() ) )
                 .then( i -> {
-                    @SuppressWarnings("unchecked") Collection<GeneOntologyTermInfo> whenTerms = i.getArgumentAt( 0, Collection.class );
+                    @SuppressWarnings("unchecked") Collection<GeneOntologyTermInfo> whenTerms = i.getArgument( 0, Collection.class );
                     return whenTerms.stream().map( goService::getDirectGenes ).collect( Collectors.toSet() );
                 } );
 
@@ -1300,7 +1301,7 @@ public class UserServiceImplTest {
     private GeneOntologyTermInfo createTermWithGenes( String id, GeneInfo... genes ) {
         GeneOntologyTermInfo term = createTerm( id );
         when( goService.getDirectGenes( term ) ).thenReturn( Arrays.stream( genes ).map( GeneInfo::getGeneId ).collect( Collectors.toSet() ) );
-        when( goService.getSizeInTaxon( eq( term ), any( Taxon.class ) ) ).thenAnswer( a -> Arrays.stream( genes ).filter( g -> g.getTaxon().equals( a.getArgumentAt( 1, Taxon.class ) ) ).count() );
+        when( goService.getSizeInTaxon( eq( term ), any( Taxon.class ) ) ).thenAnswer( a -> Arrays.stream( genes ).filter( g -> g.getTaxon().equals( a.getArgument( 1, Taxon.class ) ) ).count() );
         return term;
     }
 }

@@ -257,7 +257,7 @@ public class GeneInfoServiceImplTest {
         genes.get( 12 ).setName( "Match" );
         genes.get( 13 ).setAliases( "Match" );
 
-        geneInfoRepository.save( genes.values() );
+        geneInfoRepository.saveAll( genes.values() );
 
         Collection<SearchResult<GeneInfo>> matches = geneService.autocomplete( "Match", taxon, 10 );
 
@@ -295,7 +295,7 @@ public class GeneInfoServiceImplTest {
 
     @Test
     public void updateGenes_thenSucceed() throws ParseException, IOException {
-        Taxon humanTaxon = taxonRepository.findOne( 9606 );
+        Taxon humanTaxon = taxonRepository.findById( 9606 ).get();
         when( taxonService.findByActiveTrue() ).thenReturn( Sets.newSet( humanTaxon ) );
         GeneInfoParser.Record updatedGeneRecord = new GeneInfoParser.Record( 9606, 4, "FOO", "", "BAR", Date.from( Instant.now() ) );
         when( geneInfoParser.parse( any(), eq( humanTaxon.getId() ) ) ).thenReturn( Collections.singletonList( updatedGeneRecord ) );
@@ -311,7 +311,7 @@ public class GeneInfoServiceImplTest {
 
     @Test
     public void updateGenes_whenTaxonDiffers_thenIgnoreGeneRecord() throws ParseException, IOException {
-        Taxon humanTaxon = taxonRepository.findOne( 9606 );
+        Taxon humanTaxon = taxonRepository.findById( 9606 ).get();
         when( taxonService.findByActiveTrue() ).thenReturn( Sets.newSet( humanTaxon ) );
         GeneInfoParser.Record updatedGeneRecord = new GeneInfoParser.Record( 4, 4, "FOO", "", "BAR", Date.from( Instant.now() ) );
         when( geneInfoParser.parse( any(), eq( 4 ) ) ).thenReturn( Collections.singletonList( updatedGeneRecord ) );
@@ -323,7 +323,7 @@ public class GeneInfoServiceImplTest {
 
     @Test
     public void updateGenes_whenTaxonIsChanged_thenUpdateGene() throws ParseException, IOException {
-        Taxon humanTaxon = taxonRepository.findOne( 9606 );
+        Taxon humanTaxon = taxonRepository.findById( 9606 ).get();
         Taxon otherTaxon = entityManager.persist( createTaxon( 4 ) );
         when( taxonService.findByActiveTrue() ).thenReturn( Sets.newSet( humanTaxon ) );
         entityManager.persist( createGene( 4, otherTaxon ) );

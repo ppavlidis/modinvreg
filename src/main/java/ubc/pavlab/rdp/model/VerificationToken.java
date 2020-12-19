@@ -1,10 +1,10 @@
 package ubc.pavlab.rdp.model;
 
 import lombok.*;
-import org.hibernate.validator.constraints.Email;
 import ubc.pavlab.rdp.model.enums.PrivacyLevelType;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
