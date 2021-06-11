@@ -21,6 +21,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -98,11 +99,11 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendResetTokenMessage( User user, PasswordResetToken token, Locale locale ) throws MessagingException {
-        String url = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
+        URI url = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
                 .path( "updatePassword" )
-                .queryParam( "id", user.getId() )
-                .queryParam( "token", token.getToken() )
-                .build().encode().toUriString();
+                .queryParam( "id", "{id}" )
+                .queryParam( "token", "{token}" )
+                .build( user.getId(), token.getToken() );
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter
                 .ofLocalizedDateTime( FormatStyle.SHORT )
@@ -131,12 +132,10 @@ public class EmailServiceImpl implements EmailService {
         // registration always go through the primary email
         InternetAddress recipientAddress = new InternetAddress( user.getEmail() );
         String subject = "Confirm your registration";
-        String confirmationUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
+        URI confirmationUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
                 .path( "registrationConfirm" )
-                .queryParam( "token", token.getToken() )
-                .build()
-                .encode()
-                .toUriString();
+                .queryParam( "token", "{token}" )
+                .build( token.getToken() );
         String message = registrationWelcome +
                 "\r\n\r\nPlease confirm your registration by clicking on the following link:\r\n\r\n" +
                 confirmationUrl +
@@ -149,12 +148,10 @@ public class EmailServiceImpl implements EmailService {
     public void sendContactEmailVerificationMessage( User user, VerificationToken token ) throws MessagingException {
         InternetAddress recipientAddress = new InternetAddress( user.getProfile().getContactEmail() );
         String subject = "Verify your contact email";
-        String confirmationUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
+        URI confirmationUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
                 .path( "user/verify-contact-email" )
-                .queryParam( "token", token.getToken() )
-                .build()
-                .encode()
-                .toUriString();
+                .queryParam( "token", "{token}" )
+                .build( token.getToken() );
         String message = MessageFormat.format( "Please verify your contact email by clicking on the following link:\r\n\r\n{0}",
                 confirmationUrl );
         sendSimpleMessage( subject, message, recipientAddress, null, null );
@@ -168,16 +165,14 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendUserGeneAccessRequest( UserGene userGene, User replyTo, String reason ) throws MessagingException {
-        String viewUserUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
+        URI viewUserUrl = UriComponentsBuilder.fromUri( siteSettings.getHostUri() )
                 .path( "userView/{userId}" )
-                .buildAndExpand( Collections.singletonMap( "userId", replyTo.getId() ) )
-                .encode()
-                .toUriString();
+                .build( Collections.singletonMap( "userId", replyTo.getId() ) );
         InternetAddress to = userGene.getUser().getVerifiedContactEmail().orElseThrow( () -> new MessagingException( "Could not find a verified email address for user." ) );
         InternetAddress replyToAddress = replyTo.getVerifiedContactEmail().orElseThrow( () -> new MessagingException( "Could not find a verified email address for user." ) );
         String subject = messageSource.getMessage( "rdp.site.shortname", null, Locale.getDefault() ) + " - Access Request";
         String content = messageSource.getMessage( "EmailService.sendUserGeneAccessRequest",
-                new String[]{ replyTo.getProfile().getFullName(), userGene.getSymbol(), reason, viewUserUrl }, Locale.getDefault() );
+                new String[]{ replyTo.getProfile().getFullName(), userGene.getSymbol(), reason, viewUserUrl.toString() }, Locale.getDefault() );
         sendSimpleMessage( subject, content, to, replyToAddress, getAdminAddress() );
     }
 
