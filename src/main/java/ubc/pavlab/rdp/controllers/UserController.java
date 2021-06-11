@@ -76,6 +76,7 @@ public class UserController {
         Taxon taxon = taxonService.findById( taxonId );
         modelAndView.addObject( "viewOnly", null );
         modelAndView.addObject( "user", user );
+        modelAndView.addObject( "userGenes", user.getGenesByTaxonAndTier( taxon, TierType.MANUAL ) );
         modelAndView.addObject( "taxon", taxon );
         return modelAndView;
     }

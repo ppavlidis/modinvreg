@@ -136,7 +136,7 @@
                         <div class="tab-pane fade show active" id="genes" role="tabpanel"
                              aria-labelledby="genes-tab">
                             <div class="mb-3">
-                                <div th:replace="fragments/gene-table::gene-table(genes=${user.getGenesByTaxonAndTier(taxon, T(ubc.pavlab.rdp.model.enums.TierType).MANUAL)}, defaultPrivacyLevel=${user.getEffectivePrivacyLevel()})">
+                                <div th:replace="fragments/gene-table::gene-table(genes=${userGenes}, defaultPrivacyLevel=${user.getEffectivePrivacyLevel()})">
                                     ...
                                 </div>
                             </div>
