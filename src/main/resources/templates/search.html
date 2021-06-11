@@ -273,7 +273,7 @@
     <!--Orthologs -->
     <div id="orthologsResults" class="mb-3">
         <div th:if="${orthologs != null} "
-             th:replace="fragments/user-table::ortholog-table(users=${users}, orthologs=${orthologs}, remote=false)">
+             th:replace="fragments/ortholog-table::ortholog-table(users=${users}, orthologs=${orthologs}, remote=false)">
             ...
         </div>
     </div>
