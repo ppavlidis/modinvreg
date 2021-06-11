@@ -64,7 +64,7 @@ public class Profile {
     private boolean contactEmailVerified;
 
     @Column(name = "website")
-    private URL website;
+    private String website;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "privacy_level")

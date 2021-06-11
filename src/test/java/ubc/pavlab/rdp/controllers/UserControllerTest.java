@@ -546,7 +546,7 @@ public class UserControllerTest {
         updatedProfile.setName( "Name" );
         updatedProfile.setOrganization( "Organization" );
         updatedProfile.setPhone( "555-555-5555" );
-        updatedProfile.setWebsite( new URL( "http://test.com" ) );
+        updatedProfile.setWebsite( "http://test.com" );
         updatedProfile.setPrivacyLevel( PrivacyLevelType.PRIVATE );
 
         ProfileWithoutOrganUberonIds payload = new ProfileWithoutOrganUberonIds();
@@ -566,10 +566,10 @@ public class UserControllerTest {
             throws Exception {
 
         User user = createUser( 1 );
+        user.getProfile().setWebsite( "malformed url" );
 
         when( userService.findCurrentUser() ).thenReturn( user );
         JSONObject profileJson = new JSONObject( user.getProfile() );
-        profileJson.put("website", "malformed url");
         JSONObject payload = new JSONObject();
         payload.put( "profile", profileJson );
 
