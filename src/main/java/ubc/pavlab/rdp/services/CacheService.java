@@ -6,16 +6,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronExpression;
-import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import ubc.pavlab.rdp.settings.ApplicationSettings;
 
-import java.sql.Date;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 @CommonsLog
 @Service
@@ -65,7 +60,7 @@ public class CacheService {
             userOrganService.updateUserOrgans();
             CronExpression cronExpression = CronExpression.parse( UPDATE_CACHE_CRON );
             log.info( MessageFormat.format( "Done updating cached data. Next update is scheduled on {0}.",
-                    cronExpression.next( Instant.now() ) ) );
+                    cronExpression.next( LocalDateTime.now() ) ) );
         }
     }
 }
