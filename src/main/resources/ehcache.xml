@@ -6,11 +6,11 @@
             maxElementsInMemory="10000"
             timeToLiveSeconds="600"/>
 
-    <cache name="org.hibernate.cache.internal.StandardQueryCache"
+    <cache name="default-query-results-region"
            maxElementsInMemory="10000"
            timeToLiveSeconds="300"/>
 
-    <cache name="org.hibernate.cache.spi.UpdateTimestampsCache"
+    <cache name="default-update-timestamps-region"
            maxElementsInMemory="10000"
            eternal="true"/>
 
