@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.core.Authentication;
@@ -110,6 +109,8 @@ public class UserGeneServiceImpl implements UserGeneService {
     @Cacheable(cacheNames = "stats", key = "#root.methodName")
     @Override
     public Integer countUniqueAssociationsAllTiers() {
+        if ( tierService.getEnabledTiers().isEmpty() )
+            return 0;
         return userGeneRepository.countDistinctGeneByTierIn( tierService.getEnabledTiers() );
     }
 

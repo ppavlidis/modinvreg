@@ -10,13 +10,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import ubc.pavlab.rdp.model.*;
 import ubc.pavlab.rdp.model.enums.PrivacyLevelType;
 import ubc.pavlab.rdp.model.enums.TierType;
-import ubc.pavlab.rdp.security.PermissionEvaluatorImpl;
 import ubc.pavlab.rdp.services.*;
 import ubc.pavlab.rdp.settings.ApplicationSettings;
 
@@ -180,12 +180,9 @@ public class UserGeneRepositoryTest {
         assertThat( count ).isEqualTo( 2 );
     }
 
-    @Test
-    public void countDistinctGeneByTierIn_whenTierNotMatch_thenDontCount() {
-
-        int count = userGeneRepository.countDistinctGeneByTierIn( tierService.getEnabledTiers() );
-
-        assertThat( count ).isEqualTo( 0 );
+    @Test(expected = InvalidDataAccessResourceUsageException.class)
+    public void countDistinctGeneByTierIn_whenTierNotMatch_thenRaiseException() {
+        userGeneRepository.countDistinctGeneByTierIn( tierService.getEnabledTiers() );
     }
 
     @Test
