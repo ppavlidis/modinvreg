@@ -52,7 +52,7 @@
             <div class="col">
                 <div class="card research-info edit-container">
                     <div class="card-header d-flex align-items-center">
-                        <i class="editable" th:if="${viewOnly == null}"/>
+                        <i class="editable" th:if="${viewOnly == null}"></i>
                         <h3 class="mb-0 d-inline-block">
                             <label th:for="${#ids.next('taxonDescriptions')}" class="mb-0">
                                 Organism Research Focus
@@ -136,7 +136,7 @@
                         <div class="tab-pane fade show active" id="genes" role="tabpanel"
                              aria-labelledby="genes-tab">
                             <div class="mb-3">
-                                <div th:replace="fragments/gene-table::gene-table(genes=${user.getGenesByTaxonAndTier(taxon, T(ubc.pavlab.rdp.model.enums.TierType).MANUAL)}, defaultPrivacyLevel=${user.getEffectivePrivacyLevel()})">
+                                <div th:replace="fragments/gene-table::gene-table(genes=${userGenes}, defaultPrivacyLevel=${user.getEffectivePrivacyLevel()})">
                                     ...
                                 </div>
                             </div>

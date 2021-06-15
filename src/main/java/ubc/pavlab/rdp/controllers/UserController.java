@@ -3,7 +3,6 @@ package ubc.pavlab.rdp.controllers;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.apachecommons.CommonsLog;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -29,6 +28,7 @@ import ubc.pavlab.rdp.settings.ApplicationSettings;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,6 +76,7 @@ public class UserController {
         Taxon taxon = taxonService.findById( taxonId );
         modelAndView.addObject( "viewOnly", null );
         modelAndView.addObject( "user", user );
+        modelAndView.addObject( "userGenes", user.getGenesByTaxonAndTier( taxon, TierType.MANUAL ) );
         modelAndView.addObject( "taxon", taxon );
         return modelAndView;
     }

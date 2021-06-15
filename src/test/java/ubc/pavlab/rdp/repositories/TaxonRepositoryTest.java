@@ -34,7 +34,7 @@ public class TaxonRepositoryTest {
 
     @Test
     public void findAll_thenReturnAllInCorrectOrder() {
-        List<Taxon> taxa = taxonRepository.findAll( new Sort( Sort.Direction.ASC, "ordering" ) );
+        List<Taxon> taxa = taxonRepository.findAll( Sort.by( Sort.Direction.ASC, "ordering" ) );
         assertThat( taxa ).containsExactly(
                 createTaxon( 9606 ),
                 createTaxon( 10090 ),

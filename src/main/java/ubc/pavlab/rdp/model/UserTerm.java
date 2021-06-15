@@ -66,11 +66,13 @@ public class UserTerm extends GeneOntologyTerm implements UserContent {
     }
 
     @Override
+    @JsonIgnore
     public Optional<User> getOwner() {
         return Optional.of( user );
     }
 
     @Override
+    @JsonIgnore
     public PrivacyLevelType getEffectivePrivacyLevel() {
         return user.getEffectivePrivacyLevel();
     }

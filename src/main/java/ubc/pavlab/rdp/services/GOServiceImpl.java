@@ -2,8 +2,6 @@ package ubc.pavlab.rdp.services;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import ubc.pavlab.rdp.model.Gene;
 import ubc.pavlab.rdp.model.GeneOntologyTermInfo;
@@ -221,17 +219,17 @@ public class GOServiceImpl implements GOService {
 
     @Override
     public Iterable<GeneOntologyTermInfo> save( Iterable<GeneOntologyTermInfo> terms ) {
-        return goRepository.save( terms );
+        return goRepository.saveAll( terms );
     }
 
     @Override
     public GeneOntologyTermInfo saveAlias( String goId, GeneOntologyTermInfo term ) {
-        return goRepository.saveAlias( goId, term );
+        return goRepository.saveByAlias( goId, term );
     }
 
     @Override
     public Iterable<GeneOntologyTermInfo> saveAlias( Map<String, GeneOntologyTermInfo> terms ) {
-        return goRepository.saveAlias( terms );
+        return goRepository.saveAllByAlias( terms );
     }
 
     @Override
@@ -278,9 +276,9 @@ public class GOServiceImpl implements GOService {
 
     @Override
     public Collection<Integer> getGenesInTaxon( String id, Taxon taxon ) {
-        GeneOntologyTermInfo term = goRepository.findOne( id );
-        if ( term == null ) return Collections.emptySet();
-        return getGenesInTaxon( term, taxon );
+        return goRepository.findById( id )
+                .map( term -> getGenesInTaxon( term, taxon ) )
+                .orElse( Collections.emptySet() );
     }
 
     @Override
@@ -312,7 +310,7 @@ public class GOServiceImpl implements GOService {
 
     @Override
     public GeneOntologyTermInfo getTerm( String goId ) {
-        return goRepository.findOne( goId );
+        return goRepository.findById( goId ).orElse( null );
     }
 
     @Override

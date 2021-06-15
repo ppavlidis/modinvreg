@@ -22,6 +22,14 @@ public interface UserGeneRepository extends JpaRepository<UserGene, Integer> {
 
     Integer countByTierIn( Collection<TierType> tiers );
 
+    /**
+     * Count distinct genes within a given set of tiers.
+     * <p>
+     * Do not call this method with an empty set of tiers as it will result in an invalid SQL query.
+     *
+     * @param tiers a non-empty set of tiers from which user genes are counted
+     * @return
+     */
     @Query("select count(distinct geneId) FROM UserGene WHERE tier IN (:tiers)")
     Integer countDistinctGeneByTierIn( @Param("tiers") Collection<TierType> tiers );
 
